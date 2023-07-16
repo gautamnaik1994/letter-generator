@@ -33,10 +33,11 @@ mark {
   border: 2px dashed #d1d1d1;
 }
 .clean-editor{
-  border:none;
+  border: 0px dashed transparent!important;
   mark{
     background-color: transparent;
     padding: 0;
+    border: 0px solid transparent;
   }
 }
 .create-variable-btn{
