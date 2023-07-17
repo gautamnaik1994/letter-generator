@@ -1,4 +1,4 @@
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 
 mark {
@@ -9,8 +9,9 @@ mark {
   position: relative;
  
   &:after{
+    content: attr(data-name);
     position: absolute;
-    bottom: calc(100% + 3px);
+    bottom: calc(100% + 2px);
     background-color: white;
     border: 1px solid #009688;
     font-size: 0.8em;
@@ -18,10 +19,11 @@ mark {
     border-radius: 3px;
     left: -2px;
     line-height: 1;
+    white-space: nowrap;
   }
   &:hover{
     &:after{
-      content: attr(data-name);
+     
     }
   }
 }
@@ -38,6 +40,9 @@ mark {
     background-color: transparent;
     padding: 0;
     border: 0px solid transparent;
+    &:after{
+      content: none;
+    }
   }
 }
 .create-variable-btn{
