@@ -2,10 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import JsPDF from 'jspdf';
 import SampleTemplate from '../template/offer-letter.json';
+import { useLocation } from "react-router-dom";
 
 const htmlString = SampleTemplate["html"];
 
 export default function Home() {
+  const { state } = useLocation();
+  console.log("state", state);
   const [variableMode, setVariableMode] = useState(true);
   const [btnCoords, setBtnCoords] = useState({ left: 0, top: 0 });
   const [html, setHtml] = useState(htmlString);
@@ -67,8 +70,8 @@ export default function Home() {
         value: tag.textContent
       });
     });
-      setVariables(variableData);
-      setHtml(editor.current.innerHTML);
+    setVariables(variableData);
+    setHtml(editor.current.innerHTML);
   };
 
   const handleValueChange = (e, id) => {
@@ -98,7 +101,7 @@ export default function Home() {
         })
       )
     );
-      setHtml(editor.current.innerHTML);
+    setHtml(editor.current.innerHTML);
   };
 
   useEffect(() => {
@@ -144,7 +147,7 @@ export default function Home() {
     const report = new JsPDF('portrait', 'pt', 'a4');
     editor.current.classList.add('clean-editor');
     report.html(editor.current, {
-      callback: function (pdf) {
+      callback: function(pdf) {
         pdf
           .save('myfile.pdf', { returnPromise: true })
           .then(editor.current.classList.remove('clean-editor'));
@@ -201,7 +204,7 @@ export default function Home() {
 
             />
             {showVariablBtn && (
-              <button type="button" style={{"--top":`${btnCoords.top}px`,"--left":`${btnCoords.left}px` }}  className="btn btn-primary btn-sm create-variable-btn" onClick={createVariable}>
+              <button type="button" style={{ "--top": `${btnCoords.top}px`, "--left": `${btnCoords.left}px` }} className="btn btn-primary btn-sm create-variable-btn" onClick={createVariable}>
                 Create Variable
               </button>
             )}
