@@ -2,14 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import JsPDF from 'jspdf';
 
-export default function Editor({htmlString}) {
-  const [variableMode, setVariableMode] = useState(true);
+export default function Editor({ htmlString }) {
+  //   const [variableMode, setVariableMode] = useState(true);
+  const [showVariableNames, setShowVariableNames] = useState(false);
   const [btnCoords, setBtnCoords] = useState({ left: 0, top: 0 });
   const [html, setHtml] = useState(htmlString);
   const [showVariablBtn, setShowVariableBtn] = useState(false);
   const [variables, setVariables] = useState(new Map());
-  const variableModeRef = useRef();
-  variableModeRef.current = variableMode;
+  const [togglePreview, setTogglePreview] = useState(false);
+  //   const variableModeRef = useRef();
+  //   variableModeRef.current = variableMode;
 
   const editor = useRef(null);
 
@@ -40,7 +42,7 @@ export default function Editor({htmlString}) {
   const deleteVariable = (id) => {
     let elem = editor.current;
     let tag = elem.querySelector(`#${id}`);
-    let {parentNode} = tag;
+    let { parentNode } = tag;
     const textNode = document.createTextNode(tag.textContent);
     parentNode.insertBefore(textNode, tag);
     tag.remove();
@@ -57,8 +59,8 @@ export default function Editor({htmlString}) {
 
   const generateVariables = () => {
     let variableData = new Map();
-      const variableTags = editor.current.getElementsByTagName('mark');
-      
+    const variableTags = editor.current.getElementsByTagName('mark');
+
     Array.from(variableTags).forEach((tag) => {
       variableData.set(tag.id, {
         id: tag.id,
@@ -84,10 +86,10 @@ export default function Editor({htmlString}) {
     setHtml(editor.current.innerHTML);
   };
 
-    const handleNameChange = (e, id) => {
-      console.log( editor.current.innerHTML );
-      let tag = editor.current.querySelector(`#${id}`);
-    
+  const handleNameChange = (e, id) => {
+    console.log(editor.current.innerHTML);
+    let tag = editor.current.querySelector(`#${id}`);
+
     tag.dataset.name = e.target.value;
 
     setVariables(
@@ -103,20 +105,16 @@ export default function Editor({htmlString}) {
   };
 
   useEffect(() => {
-    // handleSelection();
-  });
-
-  useEffect(() => {
     document.onselectionchange = () => {
       handleSelection();
     };
   }, []);
 
   const handleSelection = () => {
-    if (!variableModeRef.current) {
-      setShowVariableBtn(false);
-      return;
-    }
+    // if (!variableModeRef.current) {
+    //   setShowVariableBtn(false);
+    //   return;
+    // }
     let selection = window.getSelection();
     if (selection.toString().length === 0) {
       setShowVariableBtn(false);
@@ -143,13 +141,13 @@ export default function Editor({htmlString}) {
 
   const generatePDF = () => {
     const report = new JsPDF('portrait', 'pt', 'a4');
-    editor.current.classList.add('clean-editor');
+    editor.current.classList.remove('styled-editor');
     report.html(editor.current, {
-      callback: function(pdf) {
+      callback: function (pdf) {
         pdf
           .save('myfile.pdf', { returnPromise: true })
-          .then(editor.current.classList.remove('clean-editor'));
-      },
+          .then(editor.current.classList.add('styled-editor'));
+      }
     });
   };
 
@@ -173,91 +171,117 @@ export default function Editor({htmlString}) {
   return (
     <>
       <div className="container">
-        <div className="d-flex gap-3">
+        <div className="d-flex gap-4 align-items-start">
           <div className="left-sec">
-            <div>
+            <div className="d-flex justify-content-end gap-3">
+              {togglePreview ? null : (
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="showVariable"
+                    checked={showVariableNames}
+                    onChange={(e) => setShowVariableNames(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="showVariable">
+                    Show Variable Names
+                  </label>
+                </div>
+              )}
+
               <div className="form-check form-switch">
                 <input
                   className="form-check-input"
                   type="checkbox"
                   role="switch"
-                  id="flexSwitchCheckDefault"
-                  checked={variableMode}
-                  onChange={(e) => setVariableMode(e.target.checked)}
+                  id="showPreview"
+                  checked={togglePreview}
+                  onChange={(e) => setTogglePreview(e.target.checked)}
                 />
-
-                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                  Variable Mode
+                <label className="form-check-label" htmlFor="showPreview">
+                  Show Preview
                 </label>
               </div>
             </div>
             <p
-              contentEditable={!variableMode}
+              contentEditable={true}
               // onMouseUp={handleSelection}
-              className="form-control"
+              className={`editor form-control ${togglePreview ? 'border' : 'styled-editor '}  ${
+                showVariableNames ? 'show-variable-name' : ''
+              } `}
               dangerouslySetInnerHTML={{ __html: html }}
-              onBlur={(e) => { setHtml(e.target.innerHTML); generateVariables() }}
+              onBlur={(e) => {
+                setHtml(e.target.innerHTML);
+                generateVariables();
+              }}
               ref={editor}
               id="editor"
-
             />
             {showVariablBtn && (
-              <button type="button" style={{ "--top": `${btnCoords.top}px`, "--left": `${btnCoords.left}px` }} className="btn btn-primary btn-sm create-variable-btn" onClick={createVariable}>
+              <button
+                type="button"
+                style={{ '--top': `${btnCoords.top}px`, '--left': `${btnCoords.left}px` }}
+                className="btn btn-primary btn-sm create-variable-btn"
+                onClick={createVariable}>
                 Create Variable
               </button>
             )}
-            <div className="d-flex gap-3 justify-content-end">
+            <div className="d-flex gap-3 justify-content-end sticky-bottom bg-white">
               <button type="button" className="btn btn-outline-primary" onClick={saveTemplate}>
-                Save Template as JSON
+                Download Template
               </button>
               <button type="button " className="btn btn-primary mr-2" onClick={generatePDF}>
                 Export to PDF
               </button>
             </div>
           </div>
-          <div className="right-sec flex-fill">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Variable Name</th>
-                  <th>Value</th>
-                  {/* <th>ID</th> */}
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...variables.keys()].map((k) => {
-                  let data = variables.get(k);
-                  return (
-                    <tr key={k}>
-                      <td>
-                        <input
-                          className="form-control form-control-sm"
-                          value={data.dataName}
-                          onChange={(e) => handleNameChange(e, data.id)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="form-control form-control-sm"
-                          value={data.value}
-                          onChange={(e) => handleValueChange(e, data.id)}
-                        />
-                      </td>
-                      {/* <td>{data.id}</td> */}
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm"
-                          onClick={() => deleteVariable(data.id)}>
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="right-sec flex-fill  mt-3">
+            <h5>Variables</h5>
+            <div className="border rounded overflow-hidden ">
+              <table className="table variable-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    {/* <th>ID</th> */}
+                    <th width="10">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...variables.keys()].map((k) => {
+                    let data = variables.get(k);
+                    return (
+                      <tr key={k}>
+                        <td>
+                          <input
+                            className="form-control form-control-sm"
+                            value={data.dataName}
+                            onChange={(e) => handleNameChange(e, data.id)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="form-control form-control-sm"
+                            value={data.value}
+                            onChange={(e) => handleValueChange(e, data.id)}
+                          />
+                        </td>
+                        {/* <td>{data.id}</td> */}
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm w-100"
+                            onClick={() => deleteVariable(data.id)}>
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

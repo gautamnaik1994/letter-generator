@@ -1,53 +1,85 @@
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
 
-
-mark {
-  background-color: #DCEDC8;
-  border: 2px solid #33691E;
-  padding: 2px 5px;
-  border-radius: 3px;
-  position: relative;
- 
-  &:after{
-    content: attr(data-name);
-    position: absolute;
-    bottom: calc(100% + 2px);
-    background-color: white;
-    border: 1px solid #009688;
-    font-size: 0.8em;
-    padding: 2px 6px;
-    border-radius: 3px;
-    left: -2px;
-    line-height: 1;
-    white-space: nowrap;
-  }
-  &:hover{
-    &:after{
-     
-    }
-  }
+main{
+  margin-top: 5rem;
+  margin-bottom: 5rem;
 }
 
-#editor{
+.top-link.active{
+  display: none;
+}
+
+.editor {
   height: 842px;
   width: 595px;
   padding: 40px;
-  border: 2px dashed #d1d1d1;
+  border:2px dashed transparent;
 }
-.clean-editor{
-  border: 0px dashed transparent!important;
-  mark{
-    background-color: transparent;
-    padding: 0;
-    border: 0px solid transparent;
-    &:after{
-      content: none;
+
+mark{
+  background-color: transparent;
+}
+
+.styled-editor{
+  border: 2px dashed #d1d1d1;
+  mark {
+    background-color: #dcedc8;
+    border: 2px solid #33691e;
+    padding: 2px 5px;
+    border-radius: 3px;
+    position: relative;
+    &:after {
+      
+      position: absolute;
+      bottom: calc(100% + 2px);
+      background-color: white;
+      border: 1px solid #009688;
+      font-size: 0.8em;
+      padding: 2px 6px;
+      border-radius: 3px;
+      left: -2px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    &:hover {
+      &:after{
+        content: attr(data-name);
+      }
     }
   }
+    &.show-variable-name{
+      mark {
+        &:after {
+          content: attr(data-name);
+        }
+      }
+    }
 }
-.create-variable-btn{
-  position:fixed;
+
+// .clean-editor {
+//   border: 0px dashed transparent !important;
+//   mark {
+//     background-color: transparent;
+//     padding: 0;
+//     border: 0px solid transparent;
+//     &:after {
+//       content: none;
+//     }
+//   }
+// }
+.create-variable-btn {
+  position: fixed;
   z-index: 99;
-  top:calc(var(--top) + 25px);
+  top: calc(var(--top) + 25px);
   left: var(--left);
+}
+
+.variable-table{
+  tbody{
+    tr:last-child{
+      td{
+        border-bottom: 0px;
+      }
+    }
+  }
 }
