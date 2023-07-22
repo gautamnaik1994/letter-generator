@@ -1,6 +1,13 @@
 @import '../../node_modules/bootstrap/scss/bootstrap.scss';
 
+main{
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
 
+.top-link.active{
+  display: none;
+}
 
 .editor {
   height: 842px;
@@ -65,4 +72,14 @@ mark{
   z-index: 99;
   top: calc(var(--top) + 25px);
   left: var(--left);
+}
+
+.variable-table{
+  tbody{
+    tr:last-child{
+      td{
+        border-bottom: 0px;
+      }
+    }
+  }
 }
