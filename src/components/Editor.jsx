@@ -140,13 +140,15 @@ export default function Editor({ htmlString }) {
   };
 
   const generatePDF = () => {
+    
     const report = new JsPDF('portrait', 'pt', 'a4');
-    editor.current.classList.remove('styled-editor');
+    editor.current.classList.remove('styled-editor', 'border');
     report.html(editor.current, {
+      autoPaging: 'text',
       callback: function (pdf) {
         pdf
           .save('myfile.pdf', { returnPromise: true })
-          .then(editor.current.classList.add('styled-editor'));
+          .then(() => {editor.current.classList.add('styled-editor');setTogglePreview(false)});
       }
     });
   };
@@ -173,35 +175,38 @@ export default function Editor({ htmlString }) {
       <div className="container">
         <div className="d-flex gap-4 align-items-start">
           <div className="left-sec">
-            <div className="d-flex justify-content-end gap-3">
-              {togglePreview ? null : (
+            <div className="d-flex justify-content-between align-items-center">
+              <span className="mb-0 badge  text-bg-light">Page Size : A4</span>
+              <div className="d-flex gap-3">
+                {togglePreview ? null : (
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="showVariable"
+                      checked={showVariableNames}
+                      onChange={(e) => setShowVariableNames(e.target.checked)}
+                    />
+                    <label className="form-check-label" htmlFor="showVariable">
+                      Show Variable Names
+                    </label>
+                  </div>
+                )}
+
                 <div className="form-check form-switch">
                   <input
                     className="form-check-input"
                     type="checkbox"
                     role="switch"
-                    id="showVariable"
-                    checked={showVariableNames}
-                    onChange={(e) => setShowVariableNames(e.target.checked)}
+                    id="showPreview"
+                    checked={togglePreview}
+                    onChange={(e) => setTogglePreview(e.target.checked)}
                   />
-                  <label className="form-check-label" htmlFor="showVariable">
-                    Show Variable Names
+                  <label className="form-check-label" htmlFor="showPreview">
+                    Show Preview
                   </label>
                 </div>
-              )}
-
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="showPreview"
-                  checked={togglePreview}
-                  onChange={(e) => setTogglePreview(e.target.checked)}
-                />
-                <label className="form-check-label" htmlFor="showPreview">
-                  Show Preview
-                </label>
               </div>
             </div>
             <p
